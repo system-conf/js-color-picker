@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renk Seçici</title>
+<style>#25dfad#e7a6d0#25dfad
+    /* Renk seçiciyi düzenleme */
+    #color-picker {
+        position: relative;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    #color-picker input {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        outline: none;
+        cursor: pointer;
+    }
+    #selected-color-info {
+        margin-top: 10px;
+    }
+    #color-history {
+        margin-top: 10px;
+    }
+    #color-history div {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<!-- Renk seçiciyi tutacak div -->
+<div id="color-picker">
+    <input type="color" onchange="addColorToHistory(this)">
+    <div id="selected-color-info"></div>
+</div>
+
+<!-- Renk geçmişi -->
+<div id="color-history"></div>
+
+<script>
+// Renk geçmişi dizisi
+var colorHistory = [];
+
+// Renk seçiciye eklenen rengi geçmişe ekleme fonksiyonu
+function addColorToHistory(input) {
+    var selectedColor = input.value;
+    if (selectedColor !== "#000000") { // Siyah renk eklenmemesi için kontrol
+        colorHistory.unshift(selectedColor); // Yeni rengi dizinin başına ekle
+        updateColorHistory(); // Renk geçmişini güncelle
+        updateSelectedColorInfo(selectedColor); // Seçilen rengin altına hex kodunu yaz
+    }
+}
+
+// Renk seçiciye seçilen rengin altına hex kodunu yazma fonksiyonu
+function updateSelectedColorInfo(color) {
+    var selectedColorInfo = document.getElementById("selected-color-info");
+    selectedColorInfo.innerHTML = "Seçilen Renk: <span style='color:" + color + "'>" + color + "</span>";
+}
+
+// Renk geçmişini güncelleme fonksiyonu
+function updateColorHistory() {
+    var colorHistoryDiv = document.getElementById("color-history");
+    colorHistoryDiv.innerHTML = ""; // Geçmiş divini temizle
+
+    // Renk geçmişindeki her rengi dolaşarak divlere ekleyin
+    for (var i = 0; i < colorHistory.length; i++) {
+        var colorDiv = document.createElement("div");
+        colorDiv.style.backgroundColor = colorHistory[i];
+        colorDiv.title = "Renk Kodu: " + colorHistory[i];
+        colorDiv.onclick = function() { // Tıklanan rengi kopyala
+            var selectedColor = this.style.backgroundColor;
+            copyToClipboard(rgbToHex(selectedColor));
+            updateColorPickerColor(selectedColor);
+        };
+        colorHistoryDiv.appendChild(colorDiv);
+    }
+}
+
+function updateColorPickerColor(color) {
+    var colorPickerInput = document.querySelector("#color-picker input");
+    colorPickerInput.value = rgbToHex(color); // Color picker'ın rengini güncelle
+}
+
+// Renk kodunu panoya kopyalama fonksiyonu
+function copyToClipboard(text) {
+    var dummy = document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+}
+
+// RGB değerini HEX koduna dönüştürme fonksiyonu
+function rgbToHex(rgb) {
+    // RGB değeri "rgb(r, g, b)" biçimindedir
+    // Parantezlerden içeriği alarak "," ile ayırın ve boşlukları kaldırın
+    var values = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    // Her bir RGB bileşenini onaltılık sistemde (16) temsil eden HEX biçimine dönüştürün
+    var hex = "#" + ("0" + parseInt(values[1], 10).toString(16)).slice(-2) +
+                    ("0" + parseInt(values[2], 10).toString(16)).slice(-2) +
+                    ("0" + parseInt(values[3], 10).toString(16)).slice(-2);
+    return hex;
+}
+</script>
+
+</body>
+</html>
