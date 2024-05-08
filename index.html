@@ -50,6 +50,14 @@
 // Renk geçmişi dizisi
 var colorHistory = [];
 
+// Sayfa yüklendiğinde renk geçmişini yerel depodan al
+window.onload = function() {
+    if(localStorage.getItem("colorHistory")) {
+        colorHistory = JSON.parse(localStorage.getItem("colorHistory"));
+        updateColorHistory();
+    }
+};
+
 // Renk seçiciye eklenen rengi geçmişe ekleme fonksiyonu
 function addColorToHistory(input) {
     var selectedColor = input.value;
@@ -57,6 +65,8 @@ function addColorToHistory(input) {
         colorHistory.unshift(selectedColor); // Yeni rengi dizinin başına ekle
         updateColorHistory(); // Renk geçmişini güncelle
         updateSelectedColorInfo(selectedColor); // Seçilen rengin altına hex kodunu yaz
+        // Renk geçmişini yerel depoya kaydet
+        localStorage.setItem("colorHistory", JSON.stringify(colorHistory));
     }
 }
 
